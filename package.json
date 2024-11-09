@@ -1,0 +1,17 @@
+{
+  "name": "mintosqatask",
+  "version": "1.0.0",
+  "description": "Dmitrijs Petrovs home task for Mintos",
+  "main": "index.js",
+  "scripts": {
+    "test": "newman run api/userAccount.json",
+    "server": "node mock-api-server/server.js"
+  },
+  "author": "Dmitrijs Petrovs",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1",
+    "joi": "^17.13.3",
+    "newman": "^6.2.1"
+  }
+}
