@@ -23,6 +23,7 @@ describe("Delete a user tests", () => {
       .get("/users")
       .withAuth(USERNAME, PASSWORD)
       .expectBodyContains(fakeName)
+      .expectStatus(200)
       .returns("res.body.id");
 
     await spec()
