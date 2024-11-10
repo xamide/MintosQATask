@@ -1,8 +1,8 @@
 const express = require("express");
 const basicAuth = require("basic-auth");
 const { USERNAME, PASSWORD } = require("../configProvider");
-const { createUserSchema } = require("../validation/createUserValidation");
-const { editUserSchema } = require("../validation/editUserValidation");
+const { createUserSchema } = require("./validation/createUserValidation");
+const { editUserSchema } = require("./validation/editUserValidation");
 const port = 8080;
 const app = express();
 app.use(express.json());
@@ -100,7 +100,7 @@ apiRouter.put("/users/:id", (req, res) => {
   if (!user) return res.status(404).json(notFoundResponse);
 
   users[userIndex] = { ...users[userIndex], ...req.body };
-  res.status(200).json();
+  res.status(200).send();
 });
 
 // Create a new user
@@ -127,6 +127,8 @@ apiRouter.post("/users", (req, res) => {
 // Delete a user by ID
 apiRouter.delete("/users/:id", (req, res) => {
   const userId = req.params.id;
+  const user = users.find((u) => u.id === req.params.id);
+
   const notFoundResponse = createProblemDetails(
     "User not found",
     404,
@@ -134,7 +136,7 @@ apiRouter.delete("/users/:id", (req, res) => {
     req.url
   );
 
-  if (!userId) return res.status(404).json(notFoundResponse);
+  if (!user) return res.status(404).json(notFoundResponse);
 
   users = users.filter((user) => user.id !== userId);
   res.status(204).send();
