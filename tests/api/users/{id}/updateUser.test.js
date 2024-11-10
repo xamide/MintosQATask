@@ -1,28 +1,51 @@
 const { baseUrl } = require("../../../../configProvider");
 const { spec, request } = require("pactum");
 const { faker } = require("@faker-js/faker");
-const schema = require("../../../data/schemas/{id}/getUserId.schema");
+const {
+  createUserBody,
+  fakeName,
+} = require("../../../data/request-body/createUser");
 const { USERNAME, PASSWORD } = require("../../../../configProvider");
 
 describe("Update a user tests", () => {
   request.setBaseUrl(baseUrl);
 
-  const fakeName = faker.person.firstName();
+  const fakeNamePut = faker.person.firstName();
 
   test("UU-001 - Update a user successfully", async () => {
     await spec()
-      .put("/users/1")
+      .post("/users")
+      .withAuth(USERNAME, PASSWORD)
+      .withBody(createUserBody)
+      .expectStatus(201)
+      .expectJson({
+        description: "User created successfully",
+      });
+
+    const postId = await spec()
+      .get("/users")
+      .withAuth(USERNAME, PASSWORD)
+      .expectBodyContains(fakeName)
+      .returns("res.body.id");
+
+    await spec()
+      .put(`/users/${postId.length}`)
       .withAuth(USERNAME, PASSWORD)
       .withBody({
-        firstName: fakeName,
+        firstName: fakeNamePut,
       })
       .expectStatus(200);
 
     await spec()
-      .get("/users/1")
+      .get(`/users/${postId.length}`)
       .withAuth(USERNAME, PASSWORD)
-      .expectBodyContains(fakeName)
+      .expectBodyContains(fakeNamePut)
       .expectStatus(200);
+
+    await spec()
+      .delete(`/users/${postId.length}`)
+      .withAuth(USERNAME, PASSWORD)
+      .expectStatus(204);
   });
 
   test("UU-002 - Updating a non-existing user fails", async () => {
