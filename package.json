@@ -4,14 +4,17 @@
   "description": "Dmitrijs Petrovs home task for Mintos",
   "main": "index.js",
   "scripts": {
-    "test": "newman run api/userAccount.json",
+    "test": "jest tests/api/users/",
     "server": "node mock-api-server/server.js"
   },
   "author": "Dmitrijs Petrovs",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^9.2.0",
+    "basic-auth": "^2.0.1",
     "express": "^4.21.1",
+    "jest": "^29.7.0",
     "joi": "^17.13.3",
-    "newman": "^6.2.1"
+    "pactum": "^3.7.3"
   }
 }

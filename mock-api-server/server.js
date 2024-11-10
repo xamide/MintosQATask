@@ -1,9 +1,10 @@
 const express = require("express");
-const app = express();
-const createUserSchema = require("../validation/createUserValidation");
-const editUserSchema = require("../validation/editUserValidation");
+const basicAuth = require("basic-auth");
+const { USERNAME, PASSWORD } = require("../configProvider");
+const { createUserSchema } = require("../validation/createUserValidation");
+const { editUserSchema } = require("../validation/editUserValidation");
 const port = 8080;
-
+const app = express();
 app.use(express.json());
 
 const apiRouter = express.Router();
@@ -21,19 +22,6 @@ let users = [
       validUntil: "2030-12-31",
     },
   },
-
-  {
-    id: "2",
-    firstName: "Mary",
-    lastName: "Jane",
-    email: "mary.jane@example.com",
-    dateOfBirth: "1968-11-03",
-    personalIdDocument: {
-      documentId: "AB123456",
-      countryOfIssue: "US",
-      validUntil: "2027-12-01",
-    },
-  },
 ];
 
 function createProblemDetails(title, status, detail, instance) {
@@ -45,6 +33,24 @@ function createProblemDetails(title, status, detail, instance) {
   };
 }
 
+const authMiddleware = (req, res, next) => {
+  const user = basicAuth(req);
+
+  if (!user || user.name !== USERNAME || user.pass !== PASSWORD) {
+    res.setHeader("WWW-Authenticate", 'Basic realm="401"');
+    const unauthorizedResponse = createProblemDetails(
+      "Unauthorized",
+      401,
+      "Authentication failed. Please provide valid credentials",
+      req.url
+    );
+    return res.status(401).json(unauthorizedResponse);
+  }
+  next();
+};
+
+app.use(authMiddleware);
+
 // Get all users
 apiRouter.get("/users", (req, res) => {
   res.json(users);
@@ -53,21 +59,23 @@ apiRouter.get("/users", (req, res) => {
 // Get a user by ID
 apiRouter.get("/users/:id", (req, res) => {
   const user = users.find((u) => u.id === req.params.id);
-  const errorResponse = createProblemDetails(
+  const notFoundResponse = createProblemDetails(
     "User not found",
     404,
     `User with ID '${req.params.id}' was not found`,
     req.url
   );
-  if (!user) return res.status(404).json(errorResponse);
+
+  if (!user) return res.status(404).json(notFoundResponse);
+
   res.json(user);
 });
 
 // Update a user by ID
 apiRouter.put("/users/:id", (req, res) => {
   const userId = req.params.id;
+  const user = users.find((u) => u.id === req.params.id);
   const userIndex = users.findIndex((user) => user.id === userId);
-
   const { error } = editUserSchema.validate(req.body, { abortEarly: false });
 
   if (error) {
@@ -82,8 +90,17 @@ apiRouter.put("/users/:id", (req, res) => {
     return res.status(400).json({ problemDetails });
   }
 
+  const notFoundResponse = createProblemDetails(
+    "User not found",
+    404,
+    `User with ID '${req.params.id}' was not found`,
+    req.url
+  );
+
+  if (!user) return res.status(404).json(notFoundResponse);
+
   users[userIndex] = { ...users[userIndex], ...req.body };
-  res.json(users[userIndex]);
+  res.status(200).json();
 });
 
 // Create a new user
@@ -110,14 +127,14 @@ apiRouter.post("/users", (req, res) => {
 // Delete a user by ID
 apiRouter.delete("/users/:id", (req, res) => {
   const userId = req.params.id;
-  const errorResponse = createProblemDetails(
+  const notFoundResponse = createProblemDetails(
     "User not found",
     404,
     `User with ID '${req.params.id}' was not found`,
     req.url
   );
 
-  if (!user) return res.status(404).json(errorResponse);
+  if (!userId) return res.status(404).json(notFoundResponse);
 
   users = users.filter((user) => user.id !== userId);
   res.status(204).send();
@@ -128,3 +145,8 @@ app.use("/api", apiRouter);
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
+
+module.exports = {
+  USERNAME,
+  PASSWORD,
+};

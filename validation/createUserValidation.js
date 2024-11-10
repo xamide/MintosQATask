@@ -2,22 +2,22 @@ const Joi = require("joi");
 
 const createUserSchema = Joi.object({
   firstName: Joi.string().min(2).max(50).required().messages({
-    "string.min": "First name must be at least 2 characters long.",
-    "string.max": "First name must be at most 50 characters long.",
-    "any.required": "First name is required.",
+    "string.min": "firstName must be at least 2 characters long.",
+    "string.max": "firstName must be at most 50 characters long.",
+    "any.required": "firstName is required.",
   }),
   lastName: Joi.string().min(2).max(50).required().messages({
-    "string.min": "Last name must be at least 2 characters long.",
-    "string.max": "Last name must be at most 50 characters long.",
-    "any.required": "Last name is required.",
+    "string.min": "lastName must be at least 2 characters long.",
+    "string.max": "lastName must be at most 50 characters long.",
+    "any.required": "lastName is required.",
   }),
-  email: Joi.string().email().required().messages({
+  email: Joi.string().email().messages({
     "string.email": "A valid email address is required.",
-    "any.required": "Email is required.",
+    "any.required": "email is required.",
   }),
   dateOfBirth: Joi.date().iso().required().messages({
-    "date.format": "Date of birth must be in YYYY-MM-DD format.",
-    "any.required": "Date of birth is required.",
+    "date.format": "dateoOfBirth must be in YYYY-MM-DD format.",
+    "any.required": "dateOfBirth is required.",
   }),
   personalIdDocument: Joi.object({
     documentId: Joi.string().min(5).max(20).required().messages({
@@ -31,11 +31,11 @@ const createUserSchema = Joi.object({
       .messages({
         "string.pattern.base":
           "Country of issue must be a valid ISO 3166-1 alpha-2 code.",
-        "any.required": "Country of issue is required.",
+        "any.required": "countryOfIssue is required.",
       }),
     validUntil: Joi.date().iso().required().messages({
       "date.format": "Valid until date must be in YYYY-MM-DD format.",
-      "any.required": "Valid until date is required.",
+      "any.required": "validUntil date is required.",
     }),
   })
     .required()
@@ -44,4 +44,4 @@ const createUserSchema = Joi.object({
     }),
 });
 
-module.exports = createUserSchema;
+module.exports = { createUserSchema };

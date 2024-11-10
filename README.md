@@ -11,4 +11,4 @@ Dmitrijs Petrovs home task for Mintos
 # Executing the test suite
 
 1. Run `npm run server` to start the Mock API server.
-2. Run `npm run test` to execute the test suite.
+2. In a separate/new terminal window run `npm run test` to execute the test suite.
