@@ -3,7 +3,7 @@ const { spec, request } = require("pactum");
 const {
   createUserBody,
   invalidCreateUserBody,
-  fakeName,
+  fakeEmail,
 } = require("../../data/request-body/createUser");
 const {
   invalidCreateUserSchema,
@@ -16,7 +16,7 @@ describe("Create a new users tests", () => {
     await spec()
       .post("/users")
       .withAuth(USERNAME, PASSWORD)
-      .withBody(createUserBody)
+      .withJson(createUserBody)
       .expectStatus(201)
       .expectJson({
         description: "User created successfully",
@@ -25,11 +25,11 @@ describe("Create a new users tests", () => {
     const postId = await spec()
       .get("/users")
       .withAuth(USERNAME, PASSWORD)
-      .expectBodyContains(fakeName)
-      .returns("res.body.id");
+      .expectBodyContains(fakeEmail)
+      .returns("res.body[1].id");
 
     await spec()
-      .delete("/users/" + postId.length)
+      .delete(`/users/${postId}`)
       .withAuth(USERNAME, PASSWORD)
       .expectStatus(204);
   });
@@ -38,7 +38,7 @@ describe("Create a new users tests", () => {
     await spec()
       .post("/users")
       .withAuth(USERNAME, PASSWORD)
-      .withBody(invalidCreateUserBody)
+      .withJson(invalidCreateUserBody)
       .expectStatus(400)
       .expectJsonSchema(invalidCreateUserSchema)
       .expectBodyContains([
@@ -56,7 +56,7 @@ describe("Create a new users tests", () => {
     await spec()
       .post("/users")
       .withAuth(USERNAME, PASSWORD)
-      .withBody({
+      .withJson({
         email: "C",
       })
       .expectStatus(400)

@@ -3,20 +3,20 @@ const { spec, request } = require("pactum");
 const { faker } = require("@faker-js/faker");
 const {
   createUserBody,
-  fakeName,
+  fakeEmail,
 } = require("../../../data/request-body/createUser");
 const { USERNAME, PASSWORD } = require("../../../../configProvider");
 
 describe("Update a user tests", () => {
   request.setBaseUrl(baseUrl);
 
-  const fakeNamePut = faker.person.firstName();
+  const fakeEmailPut = faker.internet.email();
 
   test("UU-001 - Update a user successfully", async () => {
     await spec()
       .post("/users")
       .withAuth(USERNAME, PASSWORD)
-      .withBody(createUserBody)
+      .withJson(createUserBody)
       .expectStatus(201)
       .expectJson({
         description: "User created successfully",
@@ -25,25 +25,25 @@ describe("Update a user tests", () => {
     const postId = await spec()
       .get("/users")
       .withAuth(USERNAME, PASSWORD)
-      .expectBodyContains(fakeName)
-      .returns("res.body.id");
+      .expectBodyContains(fakeEmail)
+      .returns("res.body[1].id");
 
     await spec()
-      .put(`/users/${postId.length}`)
+      .put(`/users/${postId}`)
       .withAuth(USERNAME, PASSWORD)
-      .withBody({
-        firstName: fakeNamePut,
+      .withJson({
+        email: fakeEmailPut,
       })
       .expectStatus(200);
 
     await spec()
-      .get(`/users/${postId.length}`)
+      .get(`/users/${postId}`)
       .withAuth(USERNAME, PASSWORD)
-      .expectBodyContains(fakeNamePut)
+      .expectBodyContains(fakeEmailPut)
       .expectStatus(200);
 
     await spec()
-      .delete(`/users/${postId.length}`)
+      .delete(`/users/${postId}`)
       .withAuth(USERNAME, PASSWORD)
       .expectStatus(204);
   });
@@ -52,8 +52,8 @@ describe("Update a user tests", () => {
     await spec()
       .put("/users/aaa")
       .withAuth(USERNAME, PASSWORD)
-      .withBody({
-        firstName: fakeName,
+      .withJson({
+        email: fakeEmail,
       })
       .expectStatus(404);
   });

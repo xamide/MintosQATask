@@ -2,7 +2,7 @@ const { baseUrl } = require("../../../../configProvider");
 const { spec, request } = require("pactum");
 const {
   createUserBody,
-  fakeName,
+  fakeEmail,
 } = require("../../../data/request-body/createUser");
 const { USERNAME, PASSWORD } = require("../../../../configProvider");
 
@@ -13,7 +13,7 @@ describe("Delete a user tests", () => {
     await spec()
       .post("/users")
       .withAuth(USERNAME, PASSWORD)
-      .withBody(createUserBody)
+      .withJson(createUserBody)
       .expectStatus(201)
       .expectJson({
         description: "User created successfully",
@@ -22,17 +22,17 @@ describe("Delete a user tests", () => {
     const postId = await spec()
       .get("/users")
       .withAuth(USERNAME, PASSWORD)
-      .expectBodyContains(fakeName)
+      .expectBodyContains(fakeEmail)
       .expectStatus(200)
-      .returns("res.body.id");
+      .returns("res.body[1].id");
 
     await spec()
-      .delete(`/users/${postId.length}`)
+      .delete(`/users/${postId}`)
       .withAuth(USERNAME, PASSWORD)
       .expectStatus(204);
 
     await spec()
-      .get(`/users/${postId.length}`)
+      .get(`/users/${postId}`)
       .withAuth(USERNAME, PASSWORD)
       .expectStatus(404);
   });

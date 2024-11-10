@@ -1,10 +1,10 @@
 const { faker } = require("@faker-js/faker");
 
-const fakeName = faker.person.firstName();
+const fakeEmail = faker.internet.email();
 const createUserBody = {
-  firstName: fakeName,
+  firstName: faker.person.firstName(),
   lastName: faker.person.lastName(),
-  email: faker.internet.email(),
+  email: fakeEmail,
   dateOfBirth: faker.date.birthdate().toISOString().split("T")[0],
   personalIdDocument: {
     documentId: faker.string
@@ -38,5 +38,5 @@ const invalidCreateUserBody = {
 module.exports = {
   createUserBody,
   invalidCreateUserBody,
-  fakeName,
+  fakeEmail,
 };
