@@ -26,10 +26,10 @@ describe("Create a new users tests", () => {
       .get("/users")
       .withAuth(USERNAME, PASSWORD)
       .expectBodyContains(fakeEmail)
-      .returns("res.body[1].id");
+      .returns("res.body.id");
 
     await spec()
-      .delete(`/users/${postId}`)
+      .delete(`/users/${postId.length}`)
       .withAuth(USERNAME, PASSWORD)
       .expectStatus(204);
   });

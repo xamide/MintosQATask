@@ -26,10 +26,10 @@ describe("Update a user tests", () => {
       .get("/users")
       .withAuth(USERNAME, PASSWORD)
       .expectBodyContains(fakeEmail)
-      .returns("res.body[1].id");
+      .returns("res.body.id");
 
     await spec()
-      .put(`/users/${postId}`)
+      .put(`/users/${postId.length}`)
       .withAuth(USERNAME, PASSWORD)
       .withJson({
         email: fakeEmailPut,
@@ -37,13 +37,13 @@ describe("Update a user tests", () => {
       .expectStatus(200);
 
     await spec()
-      .get(`/users/${postId}`)
+      .get(`/users/${postId.length}`)
       .withAuth(USERNAME, PASSWORD)
       .expectBodyContains(fakeEmailPut)
       .expectStatus(200);
 
     await spec()
-      .delete(`/users/${postId}`)
+      .delete(`/users/${postId.length}`)
       .withAuth(USERNAME, PASSWORD)
       .expectStatus(204);
   });
